@@ -1,35 +1,72 @@
-#include "gate_pwm.h"
-#include "clocks_cfg.h"
-
-#include "stm32f0xx.h"
-#include <stdbool.h>
-#include <stdint.h>
-
-#define DEBUG_PIN                       (10)
-
-
-static void system_clock_setup(void);
-static void systimer_setup(void);
+//  ***************************************************************************
+/// @file    main.c
+/// @author  NeoProg
+//  ***************************************************************************
+#include "project_base.h"
+#include "systimer.h"
+#include "usart1.h"
 
 
+static void system_init(void);
+
+uint32_t concentration = 0;
+bool is_data_ready = false;
+
+
+void frame_received_callback(uint32_t frame_size) {
+    is_data_ready = true;
+    return;
+}
+
+void frame_transmitted_callback(void) {
+    return;
+}
+
+void frame_error_callback(void) {
+    return;
+}
+
+
+
+//  ***************************************************************************
+/// @brief  Program entry point
+/// @param  none
+/// @return none
+//  ***************************************************************************
 int main() {
     
-    system_clock_setup();
-    systimer_setup();
-  
-    // Enable GPIO clocks
-    RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+    system_init();
+    systimer_init();
     
-    /*GPIOA->MODER   |= (1 << (DEBUG_PIN * 2));   // Set GPIO as output
-    GPIOA->OTYPER  |= (0 << (DEBUG_PIN * 1));   // Push-pull output
-    GPIOA->OSPEEDR |= (3 << (DEBUG_PIN * 2));   // Set GPIO high speed
-    GPIOA->PUPDR   |= (0 << (DEBUG_PIN * 2));   // No pull*/
+    usart1_callbacks_t callback;
+    callback.frame_received_callback = frame_received_callback;
+    callback.frame_transmitted_callback = frame_transmitted_callback;
+    callback.frame_error_callback = frame_error_callback;
+    usart1_init(9600, &callback);
     
+    uint8_t cmd[9] = {0xFF,0x01,0x86,0x00,0x00,0x00,0x00,0x00,0x79}; 
+    uint8_t* msg = usart1_get_tx_buffer();
+    memcpy(msg, cmd, sizeof(cmd));
+    usart1_start_rx();
+    usart1_start_tx(sizeof(cmd));
     
-    gate_pwm_init();
-    gate_pwm_enable();
+    uint64_t last_time = get_time_ms();
     
     while (true) {
+        
+        if (is_data_ready) {
+            
+            uint8_t* response = usart1_get_rx_buffer();
+            
+            concentration = (uint32_t)(response[2] << 8) | (response[3] << 0);
+            is_data_ready = false;
+        }
+        
+        if (get_time_ms() - last_time > 1000) {
+            usart1_start_rx();
+            usart1_start_tx(sizeof(cmd));
+            last_time = get_time_ms();
+        }
         
         // Check HSE failure
         /*if (RCC->CIR & RCC_CIR_CSSF) {
@@ -40,53 +77,34 @@ int main() {
     }
 }
 
-static void system_clock_setup(void) {
+//  ***************************************************************************
+/// @brief  System initialization
+/// @param  none
+/// @return none
+//  ***************************************************************************
+static void system_init(void) {
     
-    // Enable HSE
-    RCC->CR |= RCC_CR_HSEON | RCC_CR_CSSON;
-    for (uint32_t i = 0; i < UINT16_MAX; ++i) {
-        asm("NOP");
-    }
+    // Enable Prefetch Buffer and set Flash Latency
+    FLASH->ACR = FLASH_ACR_PRFTBE | FLASH_ACR_LATENCY;
     
-    // Select HSI as System clocks
-    RCC->CFGR &= ~RCC_CFGR_SW;
-    RCC->CFGR |= RCC_CFGR_SW_HSI;
-    while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI);
-    
-    // Disable PLL
-    RCC->CR &= ~RCC_CR_PLLON;
-    while((RCC->CR & RCC_CR_PLLRDY) != 0);
-    
-    // Select PLL clock source
-    if (RCC->CR & RCC_CR_HSERDY) {
-        RCC->CFGR = RCC_CFGR_PLLMUL6 | RCC_CFGR_PLLSRC_HSE_PREDIV;
-    }
-    else {
-        RCC->CFGR = RCC_CFGR_PLLMUL12 | RCC_CFGR_PLLSRC_HSI_DIV2;
-    }
-    
-    // Enable PLL
+    // Configure and enable PLL
+    RCC->CFGR = RCC_CFGR_PLLMUL12 | RCC_CFGR_PLLSRC_HSI_DIV2;
     RCC->CR |= RCC_CR_PLLON;
-    while((RCC->CR & RCC_CR_PLLRDY) == 0);
+    while((RCC->CR & RCC_CR_PLLRDY) != RCC_CR_PLLRDY);
     
-    // Select PLL as System clocks
-    RCC->CFGR &= ~RCC_CFGR_SW;
+    // Switch system clocks to PLL
     RCC->CFGR |= RCC_CFGR_SW_PLL;
     while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
-}
-
-static void systimer_setup(void) {
     
-    // Systimer setup 
-    SysTick->VAL = 0;
-    SysTick->LOAD = SYSTEM_CORE_CLOCK / 1000;
-    SysTick->CTRL = (1 << SysTick_CTRL_TICKINT_Pos) | (1 << SysTick_CTRL_CLKSOURCE_Pos) | (1 << SysTick_CTRL_ENABLE_Pos);
-    NVIC_EnableIRQ(SysTick_IRQn);
-}
-
-void SysTick_Handler(void) {
-  
-    //GPIOA->ODR ^= (1 << DEBUG_PIN);
-  
-    asm("NOP");
+    // Switch USARTx clock source to system clock
+    RCC->CFGR3 |= RCC_CFGR3_USART1SW_0;
+    
+    
+    
+    // Enable GPIO clocks
+    RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+    
+    // Enable clocks for USART1
+    RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
+    while ((RCC->APB2ENR & RCC_APB2ENR_USART1EN) == 0);
 }

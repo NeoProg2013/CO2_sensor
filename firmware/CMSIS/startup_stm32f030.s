@@ -55,7 +55,6 @@
         SECTION .intvec:CODE:NOROOT(2)
 
         EXTERN  __iar_program_start
-        EXTERN  SystemInit
         PUBLIC  __vector_table
 
         DATA
@@ -141,8 +140,6 @@ Reset_Handler
         LDR R1,=0x00000000
         STR R1, [R0]
 ApplicationStart
-        LDR     R0, =SystemInit
-        BLX     R0
         LDR     R0, =__iar_program_start
         BX      R0
         
