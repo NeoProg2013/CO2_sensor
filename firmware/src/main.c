@@ -107,4 +107,8 @@ static void system_init(void) {
     // Enable clocks for USART1
     RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
     while ((RCC->APB2ENR & RCC_APB2ENR_USART1EN) == 0);
+    
+    // Enable clocks for I2C1
+    RCC->APB1ENR |= RCC_APB1ENR_I2C1EN;
+    while ((RCC->APB1ENR & RCC_APB1ENR_I2C1EN) == 0);
 }
