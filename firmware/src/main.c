@@ -5,6 +5,7 @@
 #include "project_base.h"
 #include "systimer.h"
 #include "usart1.h"
+#include "ssd1306_128x64.h"
 
 
 static void system_init(void);
@@ -26,7 +27,7 @@ void frame_error_callback(void) {
     return;
 }
 
-
+volatile bool result = false;
 
 //  ***************************************************************************
 /// @brief  Program entry point
@@ -38,7 +39,14 @@ int main() {
     system_init();
     systimer_init();
     
-    usart1_callbacks_t callback;
+    
+    result = ssd1306_128x64_init();
+    result = ssd1306_128x64_set_inverse(false);
+    result = ssd1306_128x64_set_contrast(0xFF);
+    result = ssd1306_128x64_set_state(true);
+    
+    
+    /*usart1_callbacks_t callback;
     callback.frame_received_callback = frame_received_callback;
     callback.frame_transmitted_callback = frame_transmitted_callback;
     callback.frame_error_callback = frame_error_callback;
@@ -68,11 +76,10 @@ int main() {
             last_time = get_time_ms();
         }
         
-        // Check HSE failure
-        /*if (RCC->CIR & RCC_CIR_CSSF) {
-            gate_pwm_disable();
-        }*/
-        
+        asm("NOP");
+    }*/
+    
+    while (true) {
         asm("NOP");
     }
 }
