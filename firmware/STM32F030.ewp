@@ -2148,6 +2148,12 @@
             </file>
         </group>
         <file>
+            <name>$PROJ_DIR$\src\co2_sensor.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\co2_sensor.h</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\src\main.c</name>
         </file>
         <file>

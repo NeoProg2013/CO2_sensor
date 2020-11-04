@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdio.h>
 
 
 #define SYSTEM_CLOCK_FREQUENCY              (48000000)

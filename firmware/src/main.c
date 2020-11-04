@@ -4,55 +4,16 @@
 //  ***************************************************************************
 #include "project_base.h"
 #include "systimer.h"
-#include "usart1.h"
+#include "co2_sensor.h"
 #include "oled_gl.h"
 #include "ssd1306_128x64.h"
+#define MEAS_PERIOD_MS                  (10000)
 
 
 static void system_init(void);
 
-uint32_t concentration = 0;
-bool is_data_ready = false;
 
 
-void frame_received_callback(uint32_t frame_size) {
-    is_data_ready = true;
-    return;
-}
-
-void frame_transmitted_callback(void) {
-    return;
-}
-
-void frame_error_callback(void) {
-    return;
-}
-
-volatile bool result = false;
-
-/*
-void draw_symbol(uint32_t width, uint32_t height, uint32_t row, uint32_t column, const uint8_t* symbol) {
-    
-    for (uint32_t y = row; y < row + height / 8; ++y) {
-        uint8_t* buffer = ssd1306_128x64_get_frame_buffer(y, column);
-        for (uint32_t x = column; x < column + width; ++x) {
-            
-            char test = *symbol;
-            
-            buffer[x] = *symbol;
-            ++symbol;
-        }
-    }
-}
-
-void test(void) {
-    
-    //uint8_t* frame_buffer = ssd1306_128x64_get_frame_buffer(1, 8);
-    
-    draw_symbol(24, 32, 0, 0, &font_24x32[24 * 4 * 16]);
-    ssd1306_128x64_update();
-}
-*/
 //  ***************************************************************************
 /// @brief  Program entry point
 /// @param  none
@@ -63,66 +24,79 @@ int main() {
     system_init();
     systimer_init();
     
-    oled_gl_init();
-    oled_gl_draw_string(1, 8, "00:00:00", FONT_ID_6x8);
+    
+    //
+    // Display initialization
+    //
+    if (!oled_gl_init()) {
+        NVIC_SystemReset();
+        return 0;
+    }
+    
+    oled_gl_draw_string(1, 0, "CO2 sensor", FONT_ID_6x8);
     oled_gl_draw_string(1, 105, "99%", FONT_ID_6x8);
     oled_gl_draw_horizontal_line(2, 0, 7, 128);
-    
-    oled_gl_draw_string(4, 8, "1234", FONT_ID_24x32);
+    oled_gl_draw_string(4, 8, "----", FONT_ID_24x32);
     oled_gl_draw_string(7, 105, "PPM", FONT_ID_6x8);
-    oled_gl_display_update();
     
-    /*uint8_t* frame_buffer = ssd1306_128x64_get_frame_buffer(1, 0);
-    frame_buffer[0] = 0xFF;
-    frame_buffer[1] = 0x00;
-    frame_buffer[2] = 0xFF;
-    frame_buffer[3] = 0x00;
-    ssd1306_128x64_update();*/
-    
-    
-    
-   /* usart1_callbacks_t callback;
-    callback.frame_received_callback = frame_received_callback;
-    callback.frame_transmitted_callback = frame_transmitted_callback;
-    callback.frame_error_callback = frame_error_callback;
-    usart1_init(9600, &callback);
-    
-    uint8_t cmd[9] = {0xFF,0x01,0x86,0x00,0x00,0x00,0x00,0x00,0x79}; 
-    uint8_t* msg = usart1_get_tx_buffer();
-    memcpy(msg, cmd, sizeof(cmd));
-    usart1_start_rx();
-    usart1_start_tx(sizeof(cmd));
-    
-    uint64_t last_time = get_time_ms();
-    
-    while (true) {
-        
-        if (is_data_ready) {
-            
-            uint8_t* response = usart1_get_rx_buffer();
-            
-            concentration = (uint32_t)(response[2] << 8) | (response[3] << 0);
-            is_data_ready = false;
-            
-            char buffer[16] = {0};
-            sprintf(buffer, "%4d", concentration);
-            
-            oled_gl_draw_string(2, 16, buffer, FONT_ID_24x32);
-            oled_gl_display_update();
-        }
-        
-        if (get_time_ms() - last_time > 1000) {
-            usart1_start_rx();
-            usart1_start_tx(sizeof(cmd));
-            last_time = get_time_ms();
-        }
-        
-        asm("NOP");
+    if (!oled_gl_display_update()) {
+        NVIC_SystemReset();
+        return 0;
     }
-    */
-    while (true) {
-        asm("NOP");
+    
+    //
+    // Measurements initialization
+    //
+    co2_sensor_init();
+    
+    
+    //
+    // Main loop
+    //
+    uint64_t last_meas_time = 0;
+    uint32_t errors_count = 0;
+    bool is_meas_run = true;
+    while (is_meas_run) {
+        
+        if (get_time_ms() - last_meas_time > MEAS_PERIOD_MS) {
+            if (errors_count > 10) {
+                oled_gl_draw_string(4, 8, "----", FONT_ID_24x32);
+                is_meas_run = false;
+                continue;
+            } 
+           
+            // Read concentration
+            int32_t concentration = co2_sensor_read_concentration();
+            if (concentration > 9999) { 
+                concentration = 9999;
+            }
+            
+            // Process
+            if (concentration > 0) {
+                
+                // Print concentration value to display
+                char conc_str[5] = {0};
+                sprintf(conc_str, "%4d", concentration);
+                oled_gl_draw_string(1, 105, "99%", FONT_ID_6x8);
+                oled_gl_draw_string(4, 8, conc_str, FONT_ID_24x32);
+                oled_gl_draw_string(7, 105, "PPM", FONT_ID_6x8);
+                if (!oled_gl_display_update()) {
+                    NVIC_SystemReset();
+                    return 0;
+                }
+                
+                // Reset errors count
+                errors_count = 0;
+            }
+            else {
+                ++errors_count;
+            }
+            
+            last_meas_time = get_time_ms();
+        }
     }
+    
+    while (true);
 }
 
 //  ***************************************************************************
