@@ -13,7 +13,7 @@
 typedef struct {
     uint8_t width;
     uint8_t height;
-    const uint8_t* symbols[96];
+    const uint8_t* symbols[95];
 } font_t;
 
 #include "oled_gl_font_6x8.h"
@@ -30,6 +30,7 @@ static font_t font_list[2] = {0};
 bool oled_gl_init(void) {
     
     // Font registration
+    font_6x8_init(&font_list[FONT_ID_6x8]);
     font_24x32_init(&font_list[FONT_ID_24x32]);
     
     // Display initialization

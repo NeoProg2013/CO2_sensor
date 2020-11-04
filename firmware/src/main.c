@@ -64,7 +64,12 @@ int main() {
     systimer_init();
     
     oled_gl_init();
-    oled_gl_draw_string(2, 16, "----", FONT_ID_24x32);
+    oled_gl_draw_string(1, 8, "00:00:00", FONT_ID_6x8);
+    oled_gl_draw_string(1, 105, "99%", FONT_ID_6x8);
+    oled_gl_draw_horizontal_line(2, 0, 7, 128);
+    
+    oled_gl_draw_string(4, 8, "1234", FONT_ID_24x32);
+    oled_gl_draw_string(7, 105, "PPM", FONT_ID_6x8);
     oled_gl_display_update();
     
     /*uint8_t* frame_buffer = ssd1306_128x64_get_frame_buffer(1, 0);
@@ -76,7 +81,7 @@ int main() {
     
     
     
-    usart1_callbacks_t callback;
+   /* usart1_callbacks_t callback;
     callback.frame_received_callback = frame_received_callback;
     callback.frame_transmitted_callback = frame_transmitted_callback;
     callback.frame_error_callback = frame_error_callback;
@@ -114,7 +119,7 @@ int main() {
         
         asm("NOP");
     }
-    
+    */
     while (true) {
         asm("NOP");
     }

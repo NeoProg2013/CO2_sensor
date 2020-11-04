@@ -2,6 +2,7 @@
 /// @file   oled_gl_font_24x32.h
 /// @author NeoProg
 /// @brief  Font 24x32 for OLED display
+/// @source https://lexus2k.github.io/ssd1306/ssd1306__fonts_8c_source.html
 // ***************************************************************************
 #ifndef OLED_GL_FONT_24X32_H_
 #define OLED_GL_FONT_24X32_H_
@@ -27,17 +28,17 @@ static void font_24x32_init(font_t* font) {
     
     font->width = 24;
     font->height = 32;
-    font->symbols['-' - FONT_SYMBOL_OFFSET] = &font_24x32_bitmap[24 * 4 *  0];
-    font->symbols['0' - FONT_SYMBOL_OFFSET] = &font_24x32_bitmap[24 * 4 *  1];
-    font->symbols['1' - FONT_SYMBOL_OFFSET] = &font_24x32_bitmap[24 * 4 *  2];
-    font->symbols['2' - FONT_SYMBOL_OFFSET] = &font_24x32_bitmap[24 * 4 *  3];
-    font->symbols['3' - FONT_SYMBOL_OFFSET] = &font_24x32_bitmap[24 * 4 *  4];
-    font->symbols['4' - FONT_SYMBOL_OFFSET] = &font_24x32_bitmap[24 * 4 *  5];
-    font->symbols['5' - FONT_SYMBOL_OFFSET] = &font_24x32_bitmap[24 * 4 *  6];
-    font->symbols['6' - FONT_SYMBOL_OFFSET] = &font_24x32_bitmap[24 * 4 *  7];
-    font->symbols['7' - FONT_SYMBOL_OFFSET] = &font_24x32_bitmap[24 * 4 *  8];
-    font->symbols['8' - FONT_SYMBOL_OFFSET] = &font_24x32_bitmap[24 * 4 *  9];
-    font->symbols['9' - FONT_SYMBOL_OFFSET] = &font_24x32_bitmap[24 * 4 * 10];
+    font->symbols['-' - FONT_SYMBOL_OFFSET] = &font_24x32_bitmap[font->width * font->height / 8 *  0];
+    font->symbols['0' - FONT_SYMBOL_OFFSET] = &font_24x32_bitmap[font->width * font->height / 8 *  1];
+    font->symbols['1' - FONT_SYMBOL_OFFSET] = &font_24x32_bitmap[font->width * font->height / 8 *  2];
+    font->symbols['2' - FONT_SYMBOL_OFFSET] = &font_24x32_bitmap[font->width * font->height / 8 *  3];
+    font->symbols['3' - FONT_SYMBOL_OFFSET] = &font_24x32_bitmap[font->width * font->height / 8 *  4];
+    font->symbols['4' - FONT_SYMBOL_OFFSET] = &font_24x32_bitmap[font->width * font->height / 8 *  5];
+    font->symbols['5' - FONT_SYMBOL_OFFSET] = &font_24x32_bitmap[font->width * font->height / 8 *  6];
+    font->symbols['6' - FONT_SYMBOL_OFFSET] = &font_24x32_bitmap[font->width * font->height / 8 *  7];
+    font->symbols['7' - FONT_SYMBOL_OFFSET] = &font_24x32_bitmap[font->width * font->height / 8 *  8];
+    font->symbols['8' - FONT_SYMBOL_OFFSET] = &font_24x32_bitmap[font->width * font->height / 8 *  9];
+    font->symbols['9' - FONT_SYMBOL_OFFSET] = &font_24x32_bitmap[font->width * font->height / 8 * 10];
 }
 
 #endif /* OLED_GL_FONT_24X32_H_ */
