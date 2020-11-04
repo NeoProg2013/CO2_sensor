@@ -5,6 +5,7 @@
 #include "project_base.h"
 #include "systimer.h"
 #include "usart1.h"
+#include "oled_gl.h"
 #include "ssd1306_128x64.h"
 
 
@@ -29,6 +30,29 @@ void frame_error_callback(void) {
 
 volatile bool result = false;
 
+/*
+void draw_symbol(uint32_t width, uint32_t height, uint32_t row, uint32_t column, const uint8_t* symbol) {
+    
+    for (uint32_t y = row; y < row + height / 8; ++y) {
+        uint8_t* buffer = ssd1306_128x64_get_frame_buffer(y, column);
+        for (uint32_t x = column; x < column + width; ++x) {
+            
+            char test = *symbol;
+            
+            buffer[x] = *symbol;
+            ++symbol;
+        }
+    }
+}
+
+void test(void) {
+    
+    //uint8_t* frame_buffer = ssd1306_128x64_get_frame_buffer(1, 8);
+    
+    draw_symbol(24, 32, 0, 0, &font_24x32[24 * 4 * 16]);
+    ssd1306_128x64_update();
+}
+*/
 //  ***************************************************************************
 /// @brief  Program entry point
 /// @param  none
@@ -39,14 +63,20 @@ int main() {
     system_init();
     systimer_init();
     
+    oled_gl_init();
+    oled_gl_draw_string(2, 16, "----", FONT_ID_24x32);
+    oled_gl_display_update();
     
-    result = ssd1306_128x64_init();
-    result = ssd1306_128x64_set_inverse(false);
-    result = ssd1306_128x64_set_contrast(0xFF);
-    result = ssd1306_128x64_set_state(true);
+    /*uint8_t* frame_buffer = ssd1306_128x64_get_frame_buffer(1, 0);
+    frame_buffer[0] = 0xFF;
+    frame_buffer[1] = 0x00;
+    frame_buffer[2] = 0xFF;
+    frame_buffer[3] = 0x00;
+    ssd1306_128x64_update();*/
     
     
-    /*usart1_callbacks_t callback;
+    
+    usart1_callbacks_t callback;
     callback.frame_received_callback = frame_received_callback;
     callback.frame_transmitted_callback = frame_transmitted_callback;
     callback.frame_error_callback = frame_error_callback;
@@ -68,6 +98,12 @@ int main() {
             
             concentration = (uint32_t)(response[2] << 8) | (response[3] << 0);
             is_data_ready = false;
+            
+            char buffer[16] = {0};
+            sprintf(buffer, "%4d", concentration);
+            
+            oled_gl_draw_string(2, 16, buffer, FONT_ID_24x32);
+            oled_gl_display_update();
         }
         
         if (get_time_ms() - last_time > 1000) {
@@ -77,7 +113,7 @@ int main() {
         }
         
         asm("NOP");
-    }*/
+    }
     
     while (true) {
         asm("NOP");

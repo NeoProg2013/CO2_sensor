@@ -9,8 +9,8 @@
 
 #define DISPLAY_I2C_ADDRESS                 (0x3C << 1)
 
-#define FRAME_BEGIN_DEAD_ZONE               (2)
-#define FRAME_END_DEAD_ZONE                 (2)
+#define FRAME_BEGIN_DEAD_ZONE               (0)
+#define FRAME_END_DEAD_ZONE                 (0)
 #define FRAME_ROW_COUNT                     (DISPLAY_HEIGHT / 8)
 #define FRAME_COLUMN_COUNT                  (FRAME_BEGIN_DEAD_ZONE + DISPLAY_WIDTH + FRAME_END_DEAD_ZONE)
 #define FRAME_BUFFER_SIZE                   (FRAME_ROW_COUNT * FRAME_COLUMN_COUNT)
@@ -78,7 +78,7 @@ bool ssd1306_128x64_init(void) {
     if (!ssd1306_send_command(SET_DISPLAY_CLOCK_DIV, 0x80, true)) return false;                // Select display clock divide ratio/oscillator frequency register
     
     // Clear buffers
-    memset(frame_buffer, 0xAA, sizeof(frame_buffer));
+    memset(frame_buffer, 0x00, sizeof(frame_buffer));
     return ssd1306_128x64_update();
 }
 

@@ -348,6 +348,7 @@
                     <state>$PROJ_DIR$\src</state>
                     <state>$PROJ_DIR$\CMSIS</state>
                     <state>$PROJ_DIR$\src\drivers</state>
+                    <state>$PROJ_DIR$\src\tools</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -2129,6 +2130,21 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\src\drivers\usart1.h</name>
+            </file>
+        </group>
+        <group>
+            <name>tools</name>
+            <file>
+                <name>$PROJ_DIR$\src\tools\oled_gl.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\src\tools\oled_gl.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\src\tools\oled_gl_font_24x32.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\src\tools\oled_gl_font_6x8.h</name>
             </file>
         </group>
         <file>

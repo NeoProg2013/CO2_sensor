@@ -11,7 +11,7 @@
 
 #define DISPLAY_WIDTH                   (128)
 #define DISPLAY_HEIGHT                  (64)
-#define DISPLAY_MAX_ROW_COUNT           (8)
+#define DISPLAY_MAX_ROW_COUNT           (DISPLAY_HEIGHT / 8)
 
 
 extern bool ssd1306_128x64_init(void);
