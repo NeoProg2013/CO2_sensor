@@ -31,7 +31,7 @@ void i2c1_init(i2c_speed_t speed) {
     GPIOA->MODER   |=  (0x01u << (I2C_SCL_PIN * 2u));         // Output mode
     GPIOA->OTYPER  |=  (0x01u << (I2C_SCL_PIN * 1u));         // Open drain
     GPIOA->OSPEEDR |=  (0x03u << (I2C_SCL_PIN * 2u));         // High speed
-    GPIOA->PUPDR   |= (0x01u << (I2C_SCL_PIN * 2u));         // Disable pull
+    GPIOA->PUPDR   |= (0x01u << (I2C_SCL_PIN * 2u));          // Disable pull
     for (uint32_t i = 0; i < 10; ++i) {
         GPIOA->BRR = 0x01u << I2C_SCL_PIN;
         delay_ms(1);

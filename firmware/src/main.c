@@ -7,7 +7,8 @@
 #include "co2_sensor.h"
 #include "oled_gl.h"
 #include "ssd1306_128x64.h"
-#define MEAS_PERIOD_MS                  (10000)
+#include "led.h"
+#define MEAS_PERIOD_MS                  (2000)
 
 
 static void system_init(void);
@@ -23,6 +24,7 @@ int main() {
     
     system_init();
     systimer_init();
+    led_init();
     
     
     //
@@ -85,6 +87,15 @@ int main() {
                     return 0;
                 }
                 
+                // Check thresholds
+                if (concentration > 2500) {
+                    led_set_state(STATE_ALARM);
+                } else if (concentration > 1000) {
+                    led_set_state(STATE_WARNING);
+                } else {
+                    led_set_state(STATE_NORMAL);
+                }
+                
                 // Reset errors count
                 errors_count = 0;
             }
@@ -94,6 +105,7 @@ int main() {
             
             last_meas_time = get_time_ms();
         }
+        led_process();
     }
     
     while (true);
@@ -125,6 +137,7 @@ static void system_init(void) {
     
     // Enable GPIO clocks
     RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+    RCC->AHBENR |= RCC_AHBENR_GPIOFEN;
     
     // Enable clocks for USART1
     RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
