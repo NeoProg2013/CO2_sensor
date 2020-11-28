@@ -24,13 +24,14 @@ int main() {
     
     system_init();
     systimer_init();
-    led_init();
-    sysmon_init();
-    co2_sensor_init();
     if (!display_init()) {
         NVIC_SystemReset();
         return 0;
     }
+    led_init();
+    sysmon_init();
+    co2_sensor_init();
+    
     
     while (true) {
         static uint64_t last_meas_time = 0;
@@ -82,8 +83,9 @@ int main() {
                 return 0;
             }
             last_meas_time = get_time_ms();
+        } else {
+            led_process();
         }
-        led_process();
     }
 }
 
