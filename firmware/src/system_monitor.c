@@ -84,9 +84,6 @@ bool sysmon_calc_battery_voltage(void) {
 
     // Offset battery voltage
     battery_voltage += battery_voltage_offset;
-    if (sysmon_battery_voltage > battery_voltage) {
-        sysmon_battery_voltage = battery_voltage;
-    }
     
     // Calculate battery charge persents
     float battery_charge = (sysmon_battery_voltage - 2800.0f) / (4200.0f - 2800.0f) * 100.0f;
