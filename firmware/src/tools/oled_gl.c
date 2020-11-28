@@ -48,10 +48,24 @@ bool oled_gl_init(void) {
 /// @return none
 //  ***************************************************************************
 void oled_gl_clear_display(void) {
-    
     for (uint32_t i = 0; i < DISPLAY_HEIGHT / 8; ++i) {
         uint8_t* frame_buffer = ssd1306_128x64_get_frame_buffer(i, 0);
         memset(frame_buffer, 0x00, DISPLAY_WIDTH);
+    }
+}
+
+//  ***************************************************************************
+/// @brief  Draw point
+/// @param  row: display row [0; 7]
+/// @param  x, y: point position (relative row)
+/// @return none
+//  ***************************************************************************
+void oled_gl_draw_point(uint32_t row, uint32_t x, uint32_t y, bool is_show) {
+    uint8_t* frame_buffer = ssd1306_128x64_get_frame_buffer(row, x);
+    if (!is_show) {
+        frame_buffer[0] &= ~(1 << y);
+    } else {
+        frame_buffer[0] |= (1 << y);
     }
 }
 
@@ -84,18 +98,6 @@ void oled_gl_draw_string(uint32_t row, uint32_t x, const char* str, font_id_t fo
         ++str;
         x += font->width;
     }
-    
-    
-    
-    /*
-    for (uint32_t y = 0; y < font->height / 8; ++y) {
-        
-        
-        
-        for (uint32_t i = 0; *str != '\0'; ++str, i += font->width) {
-            memcpy(&frame_buffer[i], font->symbols[*str - FONT_SYMBOL_OFFSET], font->width);
-        }
-    }*/
 }
 
 //  ***************************************************************************

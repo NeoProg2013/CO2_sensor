@@ -18,6 +18,7 @@ typedef enum {
 
 extern bool oled_gl_init(void);
 extern void oled_gl_clear_display(void);
+extern void oled_gl_draw_point(uint32_t row, uint32_t x, uint32_t y, bool is_show);
 extern void oled_gl_draw_string(uint32_t row, uint32_t x, const char* str, font_id_t font_id);
 extern void oled_gl_draw_horizontal_line(uint32_t row, uint32_t x, uint32_t y, uint32_t width);
 extern bool oled_gl_display_update(void);

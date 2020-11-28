@@ -2108,6 +2108,12 @@
         <group>
             <name>drivers</name>
             <file>
+                <name>$PROJ_DIR$\src\drivers\adc.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\src\drivers\adc.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\src\drivers\i2c1.c</name>
             </file>
             <file>
@@ -2154,6 +2160,12 @@
             <name>$PROJ_DIR$\src\co2_sensor.h</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\src\display.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\display.h</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\src\led.c</name>
         </file>
         <file>
@@ -2164,6 +2176,12 @@
         </file>
         <file>
             <name>$PROJ_DIR$\src\project_base.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\system_monitor.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\system_monitor.h</name>
         </file>
     </group>
     <file>

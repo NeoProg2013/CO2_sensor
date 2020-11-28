@@ -27,33 +27,23 @@ static void usart_reset(bool reset_tx, bool reset_rx);
 /// @return none
 //  ***************************************************************************
 void usart1_init(uint32_t baud_rate, usart1_callbacks_t* callbacks) {
-    
     usart_callbacks = *callbacks;
     
-    //
-    // Setup GPIO
-    //
     // Setup TX pin
-    GPIOA->MODER   |=  (0x02u << (USART_TX_PIN * 2u)); // Alternate function mode
-    GPIOA->OSPEEDR |=  (0x03u << (USART_TX_PIN * 2u)); // High speed
-    GPIOA->PUPDR   &= ~(0x03u << (USART_TX_PIN * 2u)); // Disable pull
-    GPIOA->AFR[0]  |=  (0x01u << (USART_TX_PIN * 4u)); // AF1
+    gpio_set_mode        (GPIOA, USART_TX_PIN, GPIO_MODE_AF);
+    gpio_set_output_speed(GPIOA, USART_TX_PIN, GPIO_SPEED_HIGH);
+    gpio_set_pull        (GPIOA, USART_TX_PIN, GPIO_PULL_NO);
+    gpio_set_af          (GPIOA, USART_TX_PIN, 1);
     
     // Setup RX pin
-    GPIOA->MODER   |=  (0x02u << (USART_RX_PIN * 2u)); // Alternate function mode
-    GPIOA->OSPEEDR |=  (0x03u << (USART_RX_PIN * 2u)); // High speed
-    GPIOA->PUPDR   &= ~(0x03u << (USART_RX_PIN * 2u)); // Disable pull
-    GPIOA->PUPDR   |=  (0x01u << (USART_RX_PIN * 2u)); // Enable pull up
-    GPIOA->AFR[0]  |=  (0x01u << (USART_RX_PIN * 4u)); // AF1
-    
-    
-    //
-    // Setup USART
-    //
-    RCC->APB2RSTR |= RCC_APB2RSTR_USART1RST;
-    RCC->APB2RSTR &= ~RCC_APB2RSTR_USART1RST;
+    gpio_set_mode        (GPIOA, USART_RX_PIN, GPIO_MODE_AF);
+    gpio_set_output_speed(GPIOA, USART_RX_PIN, GPIO_SPEED_HIGH);
+    gpio_set_pull        (GPIOA, USART_RX_PIN, GPIO_PULL_UP);
+    gpio_set_af          (GPIOA, USART_RX_PIN, 1);
 
     // Setup USART: 8N1
+    RCC->APB2RSTR |= RCC_APB2RSTR_USART1RST;
+    RCC->APB2RSTR &= ~RCC_APB2RSTR_USART1RST;
     USART1->CR2  = USART_CR2_RTOEN;
     USART1->CR3  = USART_CR3_EIE;
     USART1->BRR  = SYSTEM_CLOCK_FREQUENCY / baud_rate;

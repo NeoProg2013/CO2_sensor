@@ -10,7 +10,8 @@
 
 
 extern void co2_sensor_init(void);
-extern int32_t co2_sensor_read_concentration(void);
+extern bool co2_sensor_read_concentration(void);
+extern uint16_t co2_sensor_get_concentration(void);
 
 
 #endif /* _CO2_SENSOR_H_ */

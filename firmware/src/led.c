@@ -2,8 +2,8 @@
 /// @file    led.c
 /// @author  NeoProg
 //  ***************************************************************************
-#include "project_base.h"
 #include "led.h"
+#include "project_base.h"
 #include "systimer.h"
 #define RED_LED_PIN                 (1)
 #define YELLOW_LED_PIN              (0)
@@ -18,17 +18,20 @@ static led_state_t led_state;
 /// @return none
 //  ***************************************************************************
 void led_init(void) {
+    
     // Setup red led control pin
-    GPIOF->BRR      =  (0x01 << RED_LED_PIN);
-    GPIOF->MODER   |=  (0x01u << (RED_LED_PIN * 2u)); // Output mode
-    GPIOF->OSPEEDR |=  (0x03u << (RED_LED_PIN * 2u)); // High speed
-    GPIOF->PUPDR   &= ~(0x03u << (RED_LED_PIN * 2u)); // Disable pull
+    GPIOF->BRR = (0x01 << RED_LED_PIN);
+    gpio_set_mode        (GPIOF, RED_LED_PIN, GPIO_MODE_OUTPUT);
+    gpio_set_output_type (GPIOF, RED_LED_PIN, GPIO_TYPE_PUSH_PULL);
+    gpio_set_output_speed(GPIOF, RED_LED_PIN, GPIO_SPEED_LOW);
+    gpio_set_pull        (GPIOF, RED_LED_PIN, GPIO_PULL_NO);
     
     // Setup yellow led control pin
-    GPIOF->BRR      =  (0x01 << YELLOW_LED_PIN);
-    GPIOF->MODER   |=  (0x01u << (YELLOW_LED_PIN * 2u)); // Output mode
-    GPIOF->OSPEEDR |=  (0x03u << (YELLOW_LED_PIN * 2u)); // High speed
-    GPIOF->PUPDR   &= ~(0x03u << (YELLOW_LED_PIN * 2u)); // Disable pull
+    GPIOF->BRR = (0x01 << YELLOW_LED_PIN);
+    gpio_set_mode        (GPIOF, YELLOW_LED_PIN, GPIO_MODE_OUTPUT);
+    gpio_set_output_type (GPIOF, YELLOW_LED_PIN, GPIO_TYPE_PUSH_PULL);
+    gpio_set_output_speed(GPIOF, YELLOW_LED_PIN, GPIO_SPEED_LOW);
+    gpio_set_pull        (GPIOF, YELLOW_LED_PIN, GPIO_PULL_NO);
     
     // Blink
     GPIOF->BSRR = (0x01 << RED_LED_PIN) | (0x01 << YELLOW_LED_PIN);
