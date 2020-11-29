@@ -12,7 +12,7 @@
 #define MEAS_TIMEOUT                    (100) // ms
 
 
-static const int16_t battery_voltage_offset = 0;
+static const int16_t battery_voltage_offset = 28;
 static uint16_t sysmon_battery_voltage = 4200; // mV
 static uint8_t  sysmon_battery_charge = 99; // %
 
@@ -72,7 +72,7 @@ bool sysmon_calc_battery_voltage(void) {
     }
     
     // Revert voltage divisor factor (voltage_div_factor = 1 / real_factor)
-    // Voltage divisor: VIN-[10k]-OUT-[3k3]-GND
+    // Voltage divisor: VIN-[10k]-OUT-[10k]-GND
     // * 1000 - convert V to mV
     const float voltage_div_factor = ((10000.0f + 10000.0f) / 10000.0f) * 1000.0f;
     const float bins_to_voltage_factor = 3.3f / 4096.0f;
@@ -84,6 +84,12 @@ bool sysmon_calc_battery_voltage(void) {
 
     // Offset battery voltage
     battery_voltage += battery_voltage_offset;
+    if (battery_voltage > 4200) {
+        battery_voltage = 4200;
+    }
+    if (battery_voltage < 2800) {
+        battery_voltage = 2800;
+    }
     if (sysmon_battery_voltage > battery_voltage) {
         sysmon_battery_voltage = battery_voltage;
     }

@@ -75,7 +75,7 @@ bool ssd1306_128x64_init(void) {
     if (!ssd1306_send_command(SET_COM_PINS_MODE, COM_PINS_MODE_ALTERNATE, true)) return false; // Select COM pin hardware configuration register
 
     // Timing and driving scheme configuration
-    if (!ssd1306_send_command(SET_DISPLAY_CLOCK_DIV, 0x80, true)) return false;                // Select display clock divide ratio/oscillator frequency register
+    //if (!ssd1306_send_command(SET_DISPLAY_CLOCK_DIV, 0x00, true)) return false;                // Select display clock divide ratio/oscillator frequency register
     
     // Clear buffers
     memset(frame_buffer, 0x00, sizeof(frame_buffer));

@@ -100,7 +100,7 @@ int main() {
 static void system_init(void) {
     
     // Enable Prefetch Buffer and set Flash Latency
-    FLASH->ACR = FLASH_ACR_PRFTBE | FLASH_ACR_LATENCY;
+    FLASH->ACR = FLASH_ACR_PRFTBE;// | FLASH_ACR_LATENCY;
     
     /*// Configure and enable PLL
     RCC->CFGR = RCC_CFGR_PLLMUL12 | RCC_CFGR_PLLSRC_HSI_DIV2;

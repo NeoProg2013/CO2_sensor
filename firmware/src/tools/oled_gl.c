@@ -36,7 +36,7 @@ bool oled_gl_init(void) {
     // Display initialization
     if (!ssd1306_128x64_init())             { return false; }
     if (!ssd1306_128x64_set_inverse(false)) { return false; }
-    if (!ssd1306_128x64_set_contrast(0xFF)) { return false; }
+    if (!ssd1306_128x64_set_contrast(0x00)) { return false; }
     if (!ssd1306_128x64_set_state(true))    { return false; }
     
     return true;
