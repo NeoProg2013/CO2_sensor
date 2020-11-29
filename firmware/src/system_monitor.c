@@ -49,7 +49,7 @@ bool sysmon_is_charger_connect(void) {
 bool sysmon_calc_battery_voltage(void) {
     
     // Gathering raw data
-    static uint32_t acc_adc_bins = 0;
+    uint32_t acc_adc_bins = 0;
     for (uint32_t i = 0; i < ACCUMULATE_SAMPLES_COUNT; ++i) {
         
         // Start conversion
@@ -84,6 +84,9 @@ bool sysmon_calc_battery_voltage(void) {
 
     // Offset battery voltage
     battery_voltage += battery_voltage_offset;
+    if (sysmon_battery_voltage > battery_voltage) {
+        sysmon_battery_voltage = battery_voltage;
+    }
     
     // Calculate battery charge persents
     float battery_charge = (sysmon_battery_voltage - 2800.0f) / (4200.0f - 2800.0f) * 100.0f;

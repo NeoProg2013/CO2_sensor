@@ -21,13 +21,11 @@ bool display_init(void) {
     if (!oled_gl_init()) {
         return false;
     }
-    
     oled_gl_draw_string(0, 0, "CO2 sensor", FONT_ID_6x8);
     oled_gl_draw_string(0, 105, CHARGE_UNKNOWN_VALUE_STR, FONT_ID_6x8);
     oled_gl_draw_horizontal_line(1, 0, 7, 128);
     oled_gl_draw_string(3, 8, CONC_UNKNOWN_VALUE_STR, FONT_ID_24x32);
     oled_gl_draw_string(6, 105, "PPM", FONT_ID_6x8);
-    
     return display_update(CONC_UNKNOWN_VALUE, CHARGE_UNKNOWN_VALUE);
 }
 

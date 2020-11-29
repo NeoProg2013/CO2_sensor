@@ -58,20 +58,14 @@ void led_set_state(led_state_t state) {
 //  ***************************************************************************
 void led_process(void) {
     
-    static uint64_t start_time = 0;
-    if (get_time_ms() - start_time > 250) {
-        
+    for (uint32_t i = 0; i < 3; ++i) { 
         if (led_state == STATE_ALARM) {
-            GPIOF->BRR = (0x01 << YELLOW_LED_PIN);
-            GPIOF->ODR ^= (0x01 << RED_LED_PIN);
-        } 
-        else if (led_state == STATE_WARNING) {
-            GPIOF->BRR = (0x01 << RED_LED_PIN);
-            GPIOF->ODR ^= (0x01 << YELLOW_LED_PIN);
+            GPIOF->BSRR = (0x01 << RED_LED_PIN);
+        } else if (led_state == STATE_WARNING) {
+            GPIOF->BSRR = (0x01 << YELLOW_LED_PIN);
         }
-        else {
-            GPIOF->BRR = (0x01 << RED_LED_PIN) | (0x01 << YELLOW_LED_PIN);
-        }
-        start_time = get_time_ms();
+        delay_ms(250);
+        GPIOF->BRR = (0x01 << RED_LED_PIN) | (0x01 << YELLOW_LED_PIN);
+        delay_ms(250);
     }
 }
