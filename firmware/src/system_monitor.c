@@ -84,8 +84,8 @@ bool sysmon_calc_battery_voltage(void) {
 
     // Offset battery voltage
     battery_voltage += battery_voltage_offset;
-    if (battery_voltage > 4200) {
-        battery_voltage = 4200;
+    if (battery_voltage > 4100) {
+        battery_voltage = 4100;
     }
     if (battery_voltage < 2800) {
         battery_voltage = 2800;
@@ -95,12 +95,12 @@ bool sysmon_calc_battery_voltage(void) {
     }
     
     // Calculate battery charge persents
-    float battery_charge = (sysmon_battery_voltage - 2800.0f) / (4200.0f - 2800.0f) * 100.0f;
+    float battery_charge = (sysmon_battery_voltage - 2800.0f) / (4100.0f - 2800.0f) * 100.0f;
     if (battery_charge < 0) {
         battery_charge = 0;
     }
-    if (battery_charge > 99) {
-        battery_charge = 99;
+    if (battery_charge > 100) {
+        battery_charge = 100;
     }
     sysmon_battery_charge = (uint8_t)battery_charge;
     return true;
@@ -109,7 +109,7 @@ bool sysmon_calc_battery_voltage(void) {
 //  ***************************************************************************
 /// @brief  Get battery charge
 /// @note   none
-/// @return battery charge, % [0; 99]
+/// @return battery charge, % [0; 100]
 //  ***************************************************************************
 uint8_t sysmon_get_battery_charge(void) {
     return sysmon_battery_charge;

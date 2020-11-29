@@ -8,7 +8,8 @@
 #include "led.h"
 #include "system_monitor.h"
 #include "display.h"
-#define MEAS_PERIOD_MS                  (2000)
+#define MEAS_PERIOD_MS                  (3000)
+#define WARMUP_MEAS_COUNT               (5)
 
 
 static void system_init(void);
@@ -32,13 +33,13 @@ int main() {
     sysmon_init();
     co2_sensor_init();
     
-    
+    bool is_warmup = true;
+    uint32_t meas_counter = 0;
     while (true) {
         static uint64_t last_meas_time = 0;
         if (get_time_ms() - last_meas_time < MEAS_PERIOD_MS) {
             continue;
         }
-        last_meas_time = get_time_ms();
         
         // Meas battery charge
         uint8_t battery_charge = CHARGE_UNKNOWN_VALUE;
@@ -60,14 +61,20 @@ int main() {
         
         // Meas concentration
         uint16_t concentration = CONC_UNKNOWN_VALUE;
-        static uint32_t conc_errors_count = 0;
-        if (co2_sensor_read_concentration()) {
-            concentration = co2_sensor_get_concentration();
-            conc_errors_count = 0;
+        if (!is_warmup) {
+            static uint32_t conc_errors_count = 0;
+            if (co2_sensor_read_concentration()) {
+                concentration = co2_sensor_get_concentration();
+                conc_errors_count = 0;
+            } else {
+                ++conc_errors_count;
+                if (conc_errors_count > 10) {
+                    concentration = CONC_UNKNOWN_VALUE;
+                }
+            }
         } else {
-            ++conc_errors_count;
-            if (conc_errors_count > 10) {
-                concentration = CONC_UNKNOWN_VALUE;
+            if (++meas_counter >= WARMUP_MEAS_COUNT) {
+                is_warmup = false;
             }
         }
         
@@ -89,6 +96,8 @@ int main() {
             led_set_state(STATE_NORMAL);
         }
         led_process();
+        
+        last_meas_time = get_time_ms();
     }
 }
 

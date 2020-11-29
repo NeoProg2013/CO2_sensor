@@ -8,7 +8,7 @@
 #include "ssd1306_128x64.h"
 #include "systimer.h"
 #define CONC_UNKNOWN_VALUE_STR          "----"
-#define CHARGE_UNKNOWN_VALUE_STR        "--%"
+#define CHARGE_UNKNOWN_VALUE_STR        "---%"
 
 
 
@@ -22,7 +22,7 @@ bool display_init(void) {
         return false;
     }
     oled_gl_draw_string(0, 0, "CO2 sensor", FONT_ID_6x8);
-    oled_gl_draw_string(0, 105, CHARGE_UNKNOWN_VALUE_STR, FONT_ID_6x8);
+    oled_gl_draw_string(0, 99, CHARGE_UNKNOWN_VALUE_STR, FONT_ID_6x8);
     oled_gl_draw_horizontal_line(1, 0, 7, 128);
     oled_gl_draw_string(3, 8, CONC_UNKNOWN_VALUE_STR, FONT_ID_24x32);
     oled_gl_draw_string(6, 105, "PPM", FONT_ID_6x8);
@@ -53,15 +53,15 @@ bool display_update(uint16_t conc, uint8_t battery_charge) {
     }
     
     // Convert battery charge
-    char charge_str[4] = {0};
+    char charge_str[5] = {0};
     if (battery_charge == CHARGE_UNKNOWN_VALUE) {
         memcpy(charge_str, CHARGE_UNKNOWN_VALUE_STR, sizeof(charge_str));
     } else {
-        sprintf(charge_str, "%2d", battery_charge);
+        sprintf(charge_str, "%3d", battery_charge);
     }
     
     // Update display
-    oled_gl_draw_string(0, 105, charge_str, FONT_ID_6x8);
+    oled_gl_draw_string(0, 99, charge_str, FONT_ID_6x8);
     oled_gl_draw_string(3, 8, conc_str, FONT_ID_24x32);
     if (!oled_gl_display_update()) {
         return false;
