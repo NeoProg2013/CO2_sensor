@@ -11,9 +11,12 @@
 #define ACCUMULATE_SAMPLES_COUNT        (100)
 #define MEAS_TIMEOUT                    (100) // ms
 
+#define BATTERY_VOLTAGE_MAX             (4100)
+#define BATTERY_VOLTAGE_MIN             (2900)
+
 
 static const int16_t battery_voltage_offset = 28;
-static uint16_t sysmon_battery_voltage = 4200; // mV
+static uint16_t sysmon_battery_voltage = BATTERY_VOLTAGE_MAX; // mV
 static uint8_t  sysmon_battery_charge = 99; // %
 
 
@@ -84,32 +87,33 @@ bool sysmon_calc_battery_voltage(void) {
 
     // Offset battery voltage
     battery_voltage += battery_voltage_offset;
-    if (battery_voltage > 4100) {
-        battery_voltage = 4100;
+    if (battery_voltage > BATTERY_VOLTAGE_MAX) {
+        battery_voltage = BATTERY_VOLTAGE_MAX;
     }
-    if (battery_voltage < 2800) {
-        battery_voltage = 2800;
+    if (battery_voltage < BATTERY_VOLTAGE_MIN) {
+        battery_voltage = BATTERY_VOLTAGE_MIN;
     }
     if (sysmon_battery_voltage > battery_voltage) {
         sysmon_battery_voltage = battery_voltage;
     }
     
     // Calculate battery charge persents
-    float battery_charge = (sysmon_battery_voltage - 2800.0f) / (4100.0f - 2800.0f) * 100.0f;
-    if (battery_charge < 0) {
-        battery_charge = 0;
-    }
-    if (battery_charge > 100) {
-        battery_charge = 100;
-    }
+    float battery_charge = (float)(sysmon_battery_voltage - BATTERY_VOLTAGE_MIN) / (float)(BATTERY_VOLTAGE_MAX - BATTERY_VOLTAGE_MIN) * 100.0f;
     sysmon_battery_charge = (uint8_t)battery_charge;
+    
+    if (sysmon_battery_charge < 1) {
+        sysmon_battery_charge = 1;
+    }
+    if (sysmon_battery_charge > 100) {
+        sysmon_battery_charge = 100;
+    }
     return true;
 }
 
 //  ***************************************************************************
 /// @brief  Get battery charge
 /// @note   none
-/// @return battery charge, % [0; 100]
+/// @return battery charge, % [1; 100]
 //  ***************************************************************************
 uint8_t sysmon_get_battery_charge(void) {
     return sysmon_battery_charge;
