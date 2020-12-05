@@ -46,12 +46,13 @@ bool sysmon_is_charger_connect(void) {
 
 //  ***************************************************************************
 /// @brief  System monitor process
-/// @note   Call from Main loop
+/// @param  none
 /// @return none
 //  ***************************************************************************
 bool sysmon_calc_battery_voltage(void) {
     
     // Gathering raw data
+    adc_state_state(true);
     uint32_t acc_adc_bins = 0;
     for (uint32_t i = 0; i < ACCUMULATE_SAMPLES_COUNT; ++i) {
         
@@ -73,6 +74,7 @@ bool sysmon_calc_battery_voltage(void) {
         start_time = get_time_ms();
         while (get_time_ms() - start_time < PAUSE_BETWEEN_CONVERSIONS);
     }
+    adc_state_state(false);
     
     // Revert voltage divisor factor (voltage_div_factor = 1 / real_factor)
     // Voltage divisor: VIN-[10k]-OUT-[10k]-GND
@@ -93,8 +95,8 @@ bool sysmon_calc_battery_voltage(void) {
     if (battery_voltage < BATTERY_VOLTAGE_MIN) {
         battery_voltage = BATTERY_VOLTAGE_MIN;
     }
-    if (sysmon_battery_voltage > battery_voltage) {
-        sysmon_battery_voltage = battery_voltage;
+    if (sysmon_battery_voltage > battery_voltage || sysmon_is_charger_connect()) {
+        sysmon_battery_voltage = battery_voltage; // Allow increase voltage value for charge mode
     }
     
     // Calculate battery charge persents

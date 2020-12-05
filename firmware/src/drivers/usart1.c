@@ -29,6 +29,9 @@ static void usart_reset(bool reset_tx, bool reset_rx);
 void usart1_init(uint32_t baud_rate, usart1_callbacks_t* callbacks) {
     usart_callbacks = *callbacks;
     
+    RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
+    while ((RCC->APB2ENR & RCC_APB2ENR_USART1EN) == 0);
+    
     // Setup TX pin
     gpio_set_mode        (GPIOA, USART_TX_PIN, GPIO_MODE_AF);
     gpio_set_output_speed(GPIOA, USART_TX_PIN, GPIO_SPEED_HIGH);

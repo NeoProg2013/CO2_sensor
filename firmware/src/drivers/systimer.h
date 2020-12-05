@@ -10,6 +10,7 @@
 
 
 extern void systimer_init(void);
+extern void systimer_change_step(uint32_t step_ms);
 extern uint64_t get_time_ms(void);
 extern void delay_ms(uint32_t ms);
 

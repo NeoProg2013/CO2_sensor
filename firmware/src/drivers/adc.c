@@ -30,6 +30,21 @@ void adc_init(void) {
     ADC1->CR |= ADC_CR_ADEN;
     ADC1->SMPR |= ADC_SMPR1_SMPR_2 | ADC_SMPR1_SMPR_1 | ADC_SMPR1_SMPR_0;
     ADC1->CHSELR = ADC_CHSELR_CHSEL0;
+    ADC1->CR |= ADC_CR_ADDIS;
+
+}
+
+//  ***************************************************************************
+/// @brief  Set ADC state
+/// @param  is_enable: true - enable ADC, false - disable ADC
+/// @return none
+//  ***************************************************************************
+void adc_state_state(bool is_enable) {
+    if (is_enable) {
+        ADC1->CR |= ADC_CR_ADEN;
+    } else {
+        ADC1->CR |= ADC_CR_ADDIS;
+    }
 }
 
 //  ***************************************************************************

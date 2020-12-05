@@ -64,8 +64,8 @@ void led_process(void) {
         } else if (led_state == STATE_WARNING) {
             GPIOF->BSRR = (0x01 << YELLOW_LED_PIN);
         }
-        delay_ms(250);
+        delay_ms(300);
         GPIOF->BRR = (0x01 << RED_LED_PIN) | (0x01 << YELLOW_LED_PIN);
-        delay_ms(250);
+        delay_ms(300);
     }
 }

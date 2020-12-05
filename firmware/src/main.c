@@ -38,8 +38,11 @@ int main() {
     while (true) {
         static uint64_t last_meas_time = 0;
         if (get_time_ms() - last_meas_time < MEAS_PERIOD_MS) {
+            systimer_change_step(1000);
+            __WFI();
             continue;
         }
+        systimer_change_step(1);
         
         // Meas battery charge
         uint8_t battery_charge = CHARGE_UNKNOWN_VALUE;
@@ -108,17 +111,8 @@ int main() {
 //  ***************************************************************************
 static void system_init(void) {
     
-    // Enable Prefetch Buffer and set Flash Latency
-    FLASH->ACR = FLASH_ACR_PRFTBE;// | FLASH_ACR_LATENCY;
-    
-    /*// Configure and enable PLL
-    RCC->CFGR = RCC_CFGR_PLLMUL12 | RCC_CFGR_PLLSRC_HSI_DIV2;
-    RCC->CR |= RCC_CR_PLLON;
-    while((RCC->CR & RCC_CR_PLLRDY) != RCC_CR_PLLRDY);
-    
-    // Switch system clocks to PLL
-    RCC->CFGR |= RCC_CFGR_SW_PLL;
-    while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);*/
+    // Enable Prefetch Buffer
+    FLASH->ACR = FLASH_ACR_PRFTBE;
     
     // Switch USARTx clock source to system clock
     RCC->CFGR3 |= RCC_CFGR3_USART1SW_0;

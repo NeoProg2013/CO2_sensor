@@ -8,6 +8,7 @@
 
 
 static volatile uint64_t systime_ms = 0;
+static uint64_t step = 1;
 
 
 //  ***************************************************************************
@@ -18,15 +19,28 @@ static volatile uint64_t systime_ms = 0;
 void systimer_init(void) {
     
     systime_ms = 0;
+    step = 1;
     
     // Systimer setup 
     SysTick->VAL = 0;
-    SysTick->LOAD = SYSTEM_CLOCK_FREQUENCY / 1000;
+    SysTick->LOAD = SYSTEM_CLOCK_FREQUENCY / 1000; // One tick = 1ms
     SysTick->CTRL = (1 << SysTick_CTRL_TICKINT_Pos) | (1 << SysTick_CTRL_CLKSOURCE_Pos) | (1 << SysTick_CTRL_ENABLE_Pos);
     
     // Enable systimer
     SysTick->CTRL |= (1 << SysTick_CTRL_ENABLE_Pos);
     NVIC_EnableIRQ(SysTick_IRQn);
+}
+
+//  ***************************************************************************
+/// @brief  System timer change step
+/// @param  step_ms: step
+/// @return none
+//  ***************************************************************************
+void systimer_change_step(uint32_t step_ms) {
+    SysTick->CTRL &= ~(1 << SysTick_CTRL_ENABLE_Pos);
+    SysTick->LOAD = SYSTEM_CLOCK_FREQUENCY / (1000 / step_ms);
+    step = step_ms;
+    SysTick->CTRL |= (1 << SysTick_CTRL_ENABLE_Pos);
 }
 
 //  ***************************************************************************
@@ -57,5 +71,5 @@ void delay_ms(uint32_t ms) {
 /// @return none
 //  ***************************************************************************
 void SysTick_Handler(void) {
-    ++systime_ms;
+    systime_ms += step;
 }
