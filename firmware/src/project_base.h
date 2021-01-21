@@ -56,11 +56,11 @@ static inline void gpio_set_pull(GPIO_TypeDef* port, uint32_t pin, uint32_t pull
 
 static inline void gpio_set_af(GPIO_TypeDef* port, uint32_t pin, uint32_t af) {
     if (pin < 8) {
-        GPIOA->AFR[0] &= ~(0x0Fu << (pin * 4u)); // Clear
-        GPIOA->AFR[0] |=  (af    << (pin * 4u)); // Set
+        port->AFR[0] &= ~(0x0Fu << (pin * 4u)); // Clear
+        port->AFR[0] |=  (af    << (pin * 4u)); // Set
     } else {
-        GPIOA->AFR[1] &= ~(0x0Fu << (pin * 4u - 32u)); // Clear
-        GPIOA->AFR[1] |=  (af    << (pin * 4u - 32u)); // Set
+        port->AFR[1] &= ~(0x0Fu << (pin * 4u - 32u)); // Clear
+        port->AFR[1] |=  (af    << (pin * 4u - 32u)); // Set
     }
 }
 
